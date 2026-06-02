@@ -1,23 +1,26 @@
 [tools]
 terraform = "1.9"
 
+[env]
+AWS_VAULT_PROFILE = "rbti"
+
 [tasks."tf:init"]
 description = "Initialize Terraform module. Usage: mise run tf:init <module-path>"
 run = """
 if [ -f "$1/backend.hcl" ]; then
-  terraform -chdir=$1 init -backend-config=backend.hcl
+  aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 init -backend-config=backend.hcl
 else
-  terraform -chdir=$1 init
+  aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 init
 fi
 """
 
 [tasks."tf:plan"]
 description = "Plan Terraform changes. Usage: mise run tf:plan <module-path>"
-run = "terraform -chdir=$1 plan"
+run = "aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 plan"
 
 [tasks."tf:apply"]
 description = "Apply Terraform changes. Usage: mise run tf:apply <module-path>"
-run = "terraform -chdir=$1 apply"
+run = "aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 apply"
 
 [tasks."tf:fmt"]
 description = "Format all Terraform files recursively"
@@ -36,3 +39,7 @@ done
 [tasks."bootstrap"]
 description = "Initialize and apply the bootstrap module (creates S3 + DynamoDB + CloudTrail + IAM)"
 run = ["mise run tf:init 00-bootstrap", "mise run tf:apply 00-bootstrap"]
+
+[tasks."vault:login"]
+description = "Abre sessão aws-vault para o profile rbti"
+run = "aws-vault login $AWS_VAULT_PROFILE"
