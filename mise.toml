@@ -1,0 +1,38 @@
+[tools]
+terraform = "1.9"
+
+[tasks."tf:init"]
+description = "Initialize Terraform module. Usage: mise run tf:init <module-path>"
+run = """
+if [ -f "$1/backend.hcl" ]; then
+  terraform -chdir=$1 init -backend-config=backend.hcl
+else
+  terraform -chdir=$1 init
+fi
+"""
+
+[tasks."tf:plan"]
+description = "Plan Terraform changes. Usage: mise run tf:plan <module-path>"
+run = "terraform -chdir=$1 plan"
+
+[tasks."tf:apply"]
+description = "Apply Terraform changes. Usage: mise run tf:apply <module-path>"
+run = "terraform -chdir=$1 apply"
+
+[tasks."tf:fmt"]
+description = "Format all Terraform files recursively"
+run = "terraform fmt -recursive ."
+
+[tasks."tf:validate"]
+description = "Validate all Terraform modules"
+run = """
+for d in 00-bootstrap 01-cloud-practitioner/s3-static-site 01-cloud-practitioner/iam-basics 01-cloud-practitioner/billing-alerts 01-cloud-practitioner/ec2-first-instance; do
+  echo "Validating $d..."
+  terraform -chdir=$d init -backend=false -input=false > /dev/null
+  terraform -chdir=$d validate
+done
+"""
+
+[tasks."bootstrap"]
+description = "Initialize and apply the bootstrap module (creates S3 + DynamoDB + CloudTrail + IAM)"
+run = ["mise run tf:init 00-bootstrap", "mise run tf:apply 00-bootstrap"]

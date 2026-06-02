@@ -1,0 +1,9 @@
+directory:
+  - .
+framework:
+  - terraform
+output: cli
+compact: true
+skip-check:
+  - CKV_AWS_144  # S3 cross-region replication (desnecessário para estudo)
+  - CKV_AWS_18   # S3 access logging (coberto pelo CloudTrail)

@@ -1,0 +1,5 @@
+bucket         = "aws-cert-portfolio-tfstate-<YOUR_ACCOUNT_ID>"
+key            = "01-cloud-practitioner/billing-alerts/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "aws-cert-portfolio-tfstate-locks"
+encrypt        = true
