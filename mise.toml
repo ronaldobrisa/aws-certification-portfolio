@@ -7,20 +7,39 @@ AWS_VAULT_PROFILE = "rbti"
 [tasks."tf:init"]
 description = "Initialize Terraform module. Usage: mise run tf:init <module-path>"
 run = """
+#!/bin/bash
+BACKEND_FLAG=""
 if [ -f "$1/backend.hcl" ]; then
-  aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 init -backend-config=backend.hcl
+  BACKEND_FLAG="-backend-config=backend.hcl"
+fi
+if [ -n "$AWS_VAULT" ]; then
+  terraform -chdir=$1 init $BACKEND_FLAG
 else
-  aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 init
+  aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 init $BACKEND_FLAG
 fi
 """
 
 [tasks."tf:plan"]
 description = "Plan Terraform changes. Usage: mise run tf:plan <module-path>"
-run = "aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 plan"
+run = """
+#!/bin/bash
+if [ -n "$AWS_VAULT" ]; then
+  terraform -chdir=$1 plan
+else
+  aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 plan
+fi
+"""
 
 [tasks."tf:apply"]
 description = "Apply Terraform changes. Usage: mise run tf:apply <module-path>"
-run = "aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 apply"
+run = """
+#!/bin/bash
+if [ -n "$AWS_VAULT" ]; then
+  terraform -chdir=$1 apply
+else
+  aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 apply
+fi
+"""
 
 [tasks."tf:fmt"]
 description = "Format all Terraform files recursively"
@@ -29,6 +48,7 @@ run = "terraform fmt -recursive ."
 [tasks."tf:validate"]
 description = "Validate all Terraform modules"
 run = """
+#!/bin/bash
 for d in 00-bootstrap 01-cloud-practitioner/s3-static-site 01-cloud-practitioner/iam-basics 01-cloud-practitioner/billing-alerts 01-cloud-practitioner/ec2-first-instance; do
   echo "Validating $d..."
   terraform -chdir=$d init -backend=false -input=false > /dev/null
@@ -41,5 +61,5 @@ description = "Initialize and apply the bootstrap module (creates S3 + DynamoDB 
 run = ["mise run tf:init 00-bootstrap", "mise run tf:apply 00-bootstrap"]
 
 [tasks."vault:login"]
-description = "Abre sessão aws-vault para o profile rbti"
-run = "aws-vault login $AWS_VAULT_PROFILE"
+description = "Abre sessão aws-vault interativa para o profile rbti (8h)"
+run = "aws-vault exec $AWS_VAULT_PROFILE --duration=8h -- zsh"
