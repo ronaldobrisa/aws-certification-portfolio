@@ -1,9 +1,12 @@
 resource "aws_iam_user" "admin" {
+  # checkov:skip=CKV_AWS_273: estudo — conta pessoal de laboratório usa IAM user em vez de SSO/Identity Center
   name = "AdminUser"
   tags = local.tags
 }
 
 resource "aws_iam_user_policy_attachment" "admin" {
+  # checkov:skip=CKV_AWS_274: estudo — usuário admin pessoal do laboratório
+  # checkov:skip=CKV_AWS_40: estudo — policy anexada direto ao usuário admin pessoal (sem grupo)
   user       = aws_iam_user.admin.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
@@ -47,6 +50,7 @@ resource "aws_iam_role" "github_actions" {
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions" {
+  # checkov:skip=CKV_AWS_274: estudo — role de deploy do CI usa admin amplo; TODO escopar permissões mínimas por módulo
   role       = aws_iam_role.github_actions.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
@@ -70,6 +74,7 @@ resource "aws_iam_role" "terraform_local" {
 }
 
 resource "aws_iam_role_policy_attachment" "terraform_local" {
+  # checkov:skip=CKV_AWS_274: estudo — role de deploy local usa admin amplo; TODO escopar permissões mínimas
   role       = aws_iam_role.terraform_local.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }

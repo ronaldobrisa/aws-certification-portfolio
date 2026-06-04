@@ -7,3 +7,28 @@ compact: true
 skip-check:
   - CKV_AWS_144  # S3 cross-region replication (desnecessário para estudo)
   - CKV_AWS_18   # S3 access logging (coberto pelo CloudTrail)
+
+  # --- S3: extras de produção, não aplicáveis a repositório de estudo ---
+  - CKV_AWS_21    # S3 versioning (não necessário nos buckets de exemplo)
+  - CKV_AWS_145   # S3 cifrado com KMS CMK (usamos SSE-S3/AES256, suficiente p/ estudo)
+  - CKV2_AWS_61   # S3 lifecycle configuration
+  - CKV2_AWS_62   # S3 event notifications
+
+  # --- DynamoDB (tabela de lock do tfstate): extras desnecessários ---
+  - CKV_AWS_28    # point-in-time recovery (locks são efêmeros)
+  - CKV_AWS_119   # criptografia com KMS CMK (default SSE já cobre)
+
+  # --- CloudTrail: já tem multi-region + log file validation; extras de produção ---
+  - CKV_AWS_35    # CloudTrail cifrado com KMS CMK
+  - CKV_AWS_252   # CloudTrail entregando para SNS topic
+  - CKV2_AWS_10   # CloudTrail integrado com CloudWatch Logs
+
+  # --- CloudFront do site estático (certificado default, sem WAF): extras de produção ---
+  - CKV_AWS_68    # WAF na distribuição
+  - CKV_AWS_86    # access logging
+  - CKV_AWS_310   # origin failover
+  - CKV_AWS_374   # geo restriction
+  - CKV_AWS_174   # TLS 1.2 no viewer cert (impossível com certificado default do CloudFront)
+  - CKV2_AWS_32   # response headers policy
+  - CKV2_AWS_42   # certificado SSL customizado
+  - CKV2_AWS_47   # WAFv2 com AMR para Log4j

@@ -78,11 +78,11 @@ jobs:
           terraform_version: "1.14.9"
 
       - name: Terraform Init
-        run: terraform -chdir=${{ matrix.module }} init
+        run: terraform -chdir=${{ matrix.module }} init -input=false -backend-config=backend.hcl
 
       - name: Terraform Plan
         id: plan
-        run: terraform -chdir=${{ matrix.module }} plan -no-color
+        run: terraform -chdir=${{ matrix.module }} plan -no-color -input=false
         continue-on-error: true
 
       - name: Comment plan on PR
