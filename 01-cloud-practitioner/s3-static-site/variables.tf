@@ -1,6 +1,7 @@
 variable "bucket_name" {
-  description = "Unique name for the S3 static site bucket"
+  description = "Override para o nome do bucket (único global). Se null, é derivado do account_id."
   type        = string
+  default     = null
 }
 
 variable "tags" {

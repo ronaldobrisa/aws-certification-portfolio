@@ -1,4 +1,9 @@
+data "aws_caller_identity" "current" {}
+
 locals {
+  # Nome único global derivado do account_id (override via var.bucket_name quando necessário)
+  bucket_name = coalesce(var.bucket_name, "aws-cert-portfolio-site-${data.aws_caller_identity.current.account_id}")
+
   tags = merge({
     Project       = "aws-certification-portfolio"
     Environment   = "study"
@@ -9,12 +14,12 @@ locals {
 
 resource "aws_s3_bucket" "site" {
   # checkov:skip=CKV2_AWS_6: estudo — bucket de site estático é público por design (acesso bloqueado abaixo é intencionalmente desligado)
-  bucket = var.bucket_name
+  bucket = local.bucket_name
 
   # estudo — permite destroy mesmo com objetos do site dentro (teardown da demo em 1 comando)
   force_destroy = true
 
-  tags = merge(local.tags, { Name = var.bucket_name })
+  tags = merge(local.tags, { Name = local.bucket_name })
 }
 
 resource "aws_s3_bucket_public_access_block" "site" {
@@ -60,7 +65,7 @@ resource "aws_cloudfront_distribution" "site" {
 
   origin {
     domain_name = aws_s3_bucket_website_configuration.site.website_endpoint
-    origin_id   = "S3-${var.bucket_name}"
+    origin_id   = "S3-${local.bucket_name}"
 
     custom_origin_config {
       http_port              = 80
@@ -73,7 +78,7 @@ resource "aws_cloudfront_distribution" "site" {
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "S3-${var.bucket_name}"
+    target_origin_id       = "S3-${local.bucket_name}"
     viewer_protocol_policy = "redirect-to-https"
 
     forwarded_values {

@@ -29,6 +29,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: detect-modules
     if: needs.detect-modules.outputs.modules != '[]'
+    # Gate de aprovação manual: o apply aguarda um reviewer aprovar no
+    # GitHub Environment "production" antes de alterar a infraestrutura.
+    environment: production
+    env:
+      TF_VAR_alert_email: ${{ secrets.TF_VAR_ALERT_EMAIL }}
     strategy:
       matrix:
         module: ${{ fromJson(needs.detect-modules.outputs.modules) }}
