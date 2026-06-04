@@ -8,11 +8,20 @@ locals {
 }
 
 resource "aws_s3_bucket" "site" {
+  # checkov:skip=CKV2_AWS_6: estudo — bucket de site estático é público por design (acesso bloqueado abaixo é intencionalmente desligado)
   bucket = var.bucket_name
-  tags   = merge(local.tags, { Name = var.bucket_name })
+
+  # estudo — permite destroy mesmo com objetos do site dentro (teardown da demo em 1 comando)
+  force_destroy = true
+
+  tags = merge(local.tags, { Name = var.bucket_name })
 }
 
 resource "aws_s3_bucket_public_access_block" "site" {
+  # checkov:skip=CKV_AWS_53: estudo — site estático público exige ACLs/policy públicas
+  # checkov:skip=CKV_AWS_54: estudo — site estático público exige block_public_policy desligado
+  # checkov:skip=CKV_AWS_55: estudo — site estático público exige ignore_public_acls desligado
+  # checkov:skip=CKV_AWS_56: estudo — site estático público exige restrict_public_buckets desligado
   bucket                  = aws_s3_bucket.site.id
   block_public_acls       = false
   block_public_policy     = false
@@ -28,6 +37,7 @@ resource "aws_s3_bucket_website_configuration" "site" {
 }
 
 resource "aws_s3_bucket_policy" "site" {
+  # checkov:skip=CKV_AWS_70: estudo — leitura pública (Principal "*") é o objetivo do site estático
   bucket     = aws_s3_bucket.site.id
   depends_on = [aws_s3_bucket_public_access_block.site]
 

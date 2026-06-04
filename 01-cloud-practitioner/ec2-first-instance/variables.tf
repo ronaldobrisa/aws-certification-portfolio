@@ -5,9 +5,9 @@ variable "instance_type" {
 }
 
 variable "allowed_ssh_cidr" {
-  description = "CIDR block allowed to SSH into the instance"
+  description = "CIDR autorizado a fazer SSH na instância. Fechado por padrão; defina seu IP/32 (ex.: -var allowed_ssh_cidr=1.2.3.4/32) quando for realmente usar SSH."
   type        = string
-  default     = "0.0.0.0/0"
+  default     = "127.0.0.1/32"
 }
 
 variable "tags" {
