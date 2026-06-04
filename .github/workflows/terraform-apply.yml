@@ -3,6 +3,19 @@ name: Terraform Apply
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      module:
+        description: "Módulo para aplicar (manual)"
+        type: choice
+        required: true
+        default: all
+        options:
+          - all
+          - s3-static-site
+          - ec2-first-instance
+          - billing-alerts
+          - iam-basics
 
 permissions:
   id-token: write
@@ -18,11 +31,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Detect changed modules
+      - name: Detect modules
         id: detect
         run: |
-          CHANGED=$(git diff --name-only HEAD~1...HEAD | grep '\.tf$' | sed 's|/[^/]*\.tf$||' | sort -u | grep -v '^00-bootstrap' || true)
-          MODULES=$(echo "$CHANGED" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Disparo manual: aplica o módulo escolhido (ou todos)
+            if [ "${{ inputs.module }}" = "all" ]; then
+              MODULES=$(find 01-cloud-practitioner -mindepth 2 -maxdepth 2 -name '*.tf' | sed 's|/[^/]*$||' | sort -u | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            else
+              MODULES='["01-cloud-practitioner/${{ inputs.module }}"]'
+            fi
+          else
+            # Push na main: aplica apenas os módulos com .tf alterado
+            CHANGED=$(git diff --name-only HEAD~1...HEAD | grep '\.tf$' | sed 's|/[^/]*\.tf$||' | sort -u | grep -v '^00-bootstrap' || true)
+            MODULES=$(echo "$CHANGED" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          fi
           echo "modules=$MODULES" >> $GITHUB_OUTPUT
 
   apply:
