@@ -58,6 +58,18 @@ resource "aws_s3_bucket_policy" "site" {
   })
 }
 
+# Conteúdo do site versionado e publicado pelo próprio Terraform.
+# O etag (filemd5) faz o terraform detectar mudanças no HTML e re-publicar.
+resource "aws_s3_object" "index" {
+  bucket       = aws_s3_bucket.site.id
+  key          = "index.html"
+  source       = "${path.module}/site/index.html"
+  content_type = "text/html"
+  etag         = filemd5("${path.module}/site/index.html")
+
+  depends_on = [aws_s3_bucket_policy.site]
+}
+
 resource "aws_cloudfront_distribution" "site" {
   enabled             = true
   default_root_object = "index.html"
