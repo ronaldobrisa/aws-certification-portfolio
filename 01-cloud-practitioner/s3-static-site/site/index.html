@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AWS Certification Portfolio · Ronaldo (@ronaldobrisa)</title>
+  <meta name="description" content="Portfólio de estudos AWS com Infrastructure as Code: Terraform, GitOps e CI/CD com gate de aprovação." />
+  <style>
+    :root {
+      --navy: #232f3e;
+      --navy-2: #1b2530;
+      --orange: #ff9900;
+      --orange-soft: #ffb545;
+      --ink: #0f1722;
+      --text: #e8edf3;
+      --muted: #9fb0c3;
+      --card: #1f2a38;
+      --line: #324155;
+      --green: #4ade80;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--ink);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--orange-soft); text-decoration: none; }
+    a:hover { color: var(--orange); }
+    .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    header {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(1200px 500px at 80% -10%, rgba(255,153,0,.22), transparent 60%),
+        linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 70%);
+      border-bottom: 1px solid var(--line);
+    }
+    .hero { padding: 86px 0 72px; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--orange); font-weight: 700;
+      background: rgba(255,153,0,.10); border: 1px solid rgba(255,153,0,.30);
+      padding: 6px 14px; border-radius: 999px;
+    }
+    .hero h1 { font-size: clamp(34px, 6vw, 58px); line-height: 1.05; margin: 22px 0 14px; letter-spacing: -.02em; }
+    .hero h1 .grad {
+      background: linear-gradient(90deg, var(--orange), var(--orange-soft));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero p.lead { font-size: clamp(16px, 2.2vw, 20px); color: var(--muted); max-width: 640px; }
+    .cta { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 13px 22px; border-radius: 12px; font-weight: 600; font-size: 15px;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn-primary { background: var(--orange); color: #1a1206; box-shadow: 0 8px 24px rgba(255,153,0,.28); }
+    .btn-primary:hover { transform: translateY(-2px); color: #1a1206; box-shadow: 0 12px 30px rgba(255,153,0,.4); }
+    .btn-ghost { border: 1px solid var(--line); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--orange); color: var(--text); transform: translateY(-2px); }
+
+    .live {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 28px;
+      font-size: 13px; color: var(--muted);
+    }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(74,222,128,.6); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(74,222,128,.5)} 70%{box-shadow:0 0 0 10px rgba(74,222,128,0)} 100%{box-shadow:0 0 0 0 rgba(74,222,128,0)} }
+
+    /* Sections */
+    section { padding: 64px 0; }
+    .section-title { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); font-weight: 700; margin-bottom: 10px; }
+    .section-head h2 { font-size: clamp(24px, 4vw, 34px); letter-spacing: -.01em; margin-bottom: 8px; }
+    .section-head p { color: var(--muted); max-width: 620px; }
+
+    /* Grid de labs */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; margin-top: 34px; }
+    .card {
+      background: linear-gradient(180deg, var(--card), #1a2330);
+      border: 1px solid var(--line); border-radius: 16px; padding: 24px;
+      transition: transform .18s ease, border-color .18s ease;
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(255,153,0,.5); }
+    .card .ico { font-size: 26px; margin-bottom: 12px; }
+    .card h3 { font-size: 17px; margin-bottom: 6px; }
+    .card code { color: var(--orange-soft); font-size: 12.5px; }
+    .card p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+
+    /* Pipeline */
+    .pipe { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+    .step {
+      flex: 1 1 160px; background: var(--card); border: 1px solid var(--line);
+      border-radius: 14px; padding: 18px 20px; position: relative;
+    }
+    .step .n { font-size: 12px; color: var(--orange); font-weight: 700; letter-spacing: .1em; }
+    .step h4 { font-size: 15px; margin: 6px 0 4px; }
+    .step p { font-size: 13px; color: var(--muted); }
+
+    /* Stack */
+    .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+      padding: 9px 16px; font-size: 14px; font-weight: 500;
+    }
+    .badge b { color: var(--orange-soft); font-weight: 700; }
+
+    footer { border-top: 1px solid var(--line); padding: 40px 0; color: var(--muted); font-size: 14px; }
+    .footer-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; align-items: center; }
+    .stamp { font-size: 12.5px; color: #6f8198; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <span class="eyebrow">☁️ Infrastructure as Code · AWS</span>
+      <h1>AWS Certification<br><span class="grad">Portfolio</span></h1>
+      <p class="lead">
+        Laboratórios AWS provisionados 100% com <strong>Terraform</strong>, organizados por nível
+        de certificação e implantados por um pipeline <strong>GitOps</strong> com revisão e gate de aprovação.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/ronaldobrisa/aws-certification-portfolio" target="_blank" rel="noopener">
+          ⌥ Ver no GitHub
+        </a>
+        <a class="btn btn-ghost" href="#labs">Explorar os labs ↓</a>
+      </div>
+      <div class="live"><span class="dot"></span> Esta página está hospedada em <strong>&nbsp;S3 + CloudFront</strong>&nbsp;— provisionada pelo módulo <code>s3-static-site</code>.</div>
+    </div>
+  </header>
+
+  <section id="labs">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-title">Os laboratórios</div>
+        <h2>Construído módulo a módulo</h2>
+        <p>Cada serviço AWS vira um módulo Terraform isolado, com state remoto, lock e validação automática.</p>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <div class="ico">🌐</div>
+          <h3>Static Site</h3>
+          <code>s3-static-site</code>
+          <p>Bucket S3 + CloudFront servindo este próprio site estático.</p>
+        </div>
+        <div class="card">
+          <div class="ico">🖥️</div>
+          <h3>First EC2</h3>
+          <code>ec2-first-instance</code>
+          <p>Instância EC2 com IMDSv2 e volume EBS criptografado, servindo um web server.</p>
+        </div>
+        <div class="card">
+          <div class="ico">🔐</div>
+          <h3>IAM Basics</h3>
+          <code>iam-basics</code>
+          <p>Grupos, roles, policies customizadas e instance profile — fundamentos de IAM.</p>
+        </div>
+        <div class="card">
+          <div class="ico">💸</div>
+          <h3>Billing Alerts</h3>
+          <code>billing-alerts</code>
+          <p>AWS Budgets + CloudWatch alarm + SNS para guarda de custos.</p>
+        </div>
+        <div class="card">
+          <div class="ico">🧱</div>
+          <h3>Bootstrap</h3>
+          <code>00-bootstrap</code>
+          <p>Backend S3 + DynamoDB lock, CloudTrail e federação OIDC com o GitHub.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background: linear-gradient(180deg, transparent, rgba(255,153,0,.04));">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-title">Como é implantado</div>
+        <h2>Pipeline GitOps com gate de aprovação</h2>
+        <p>Sem chaves estáticas, sem apply manual às cegas: autenticação por OIDC e revisão humana antes de tocar a infra.</p>
+      </div>
+      <div class="pipe">
+        <div class="step"><div class="n">01</div><h4>Pull Request</h4><p><code>terraform plan</code> comentado no PR.</p></div>
+        <div class="step"><div class="n">02</div><h4>Lint & Security</h4><p>fmt · tflint · checkov (0 findings).</p></div>
+        <div class="step"><div class="n">03</div><h4>Gate manual</h4><p>Aprovação no GitHub Environment.</p></div>
+        <div class="step"><div class="n">04</div><h4>Apply (OIDC)</h4><p><code>terraform apply</code> autenticado, sem segredos.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-title">Stack & disciplina</div>
+        <h2>Ferramentas fixadas, nunca <span style="color:var(--muted)">latest</span></h2>
+        <p>Versões pinadas para reprodutibilidade total do ambiente.</p>
+      </div>
+      <div class="badges">
+        <span class="badge">⚙️ Terraform <b>1.14.9</b></span>
+        <span class="badge">📦 mise <b>2026.5.18</b></span>
+        <span class="badge">🔑 aws-vault <b>7.10.8</b></span>
+        <span class="badge">🔎 tflint <b>0.62.1</b></span>
+        <span class="badge">🛡️ checkov <b>3.2.531</b></span>
+        <span class="badge">🚀 GitHub Actions <b>OIDC</b></span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap footer-row">
+      <div>
+        Feito por <strong>Ronaldo</strong> ·
+        <a href="https://github.com/ronaldobrisa" target="_blank" rel="noopener">@ronaldobrisa</a>
+      </div>
+      <div class="stamp">Provisionado por Terraform · S3 + CloudFront · us-east-1</div>
+    </div>
+  </footer>
+</body>
+</html>
