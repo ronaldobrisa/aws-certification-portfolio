@@ -21,6 +21,11 @@ resource "aws_security_group" "instance" {
   name        = "ec2-first-instance-sg"
   description = "Security group for first EC2 instance"
 
+  # checkov:skip=CKV_AWS_24: estudo — SSH liberado via variável allowed_ssh_cidr para demonstração
+  # checkov:skip=CKV_AWS_260: estudo — HTTP público (porta 80) é o objetivo do web server de exemplo
+  # checkov:skip=CKV_AWS_382: estudo — egress aberto é o padrão do laboratório
+  # checkov:skip=CKV_AWS_23: estudo — descrição por regra dispensável neste módulo didático
+
   ingress {
     description = "SSH"
     from_port   = 22
@@ -51,6 +56,20 @@ resource "aws_instance" "main" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.instance.id]
+
+  # checkov:skip=CKV2_AWS_41: estudo — instância de demonstração sem IAM role anexada
+  # checkov:skip=CKV_AWS_126: estudo — monitoramento detalhado gera custo desnecessário
+  # checkov:skip=CKV_AWS_135: estudo — EBS optimized desnecessário para instância de classe pequena
+
+  # Hardening: exige IMDSv2 (CKV_AWS_79) e criptografa o volume root (CKV_AWS_8)
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  root_block_device {
+    encrypted = true
+  }
 
   user_data = <<-EOF
     #!/bin/bash

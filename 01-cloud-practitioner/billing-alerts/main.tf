@@ -8,6 +8,7 @@ locals {
 }
 
 resource "aws_sns_topic" "billing_alerts" {
+  # checkov:skip=CKV_AWS_26: estudo — criptografia KMS no SNS quebra a entrega do CloudWatch billing alarm via chave gerenciada pela AWS
   name = "billing-alerts"
   tags = local.tags
 }
