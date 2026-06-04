@@ -48,6 +48,17 @@ else
 fi
 """
 
+[tasks."tf:destroy"]
+description = "Destroy os recursos de um módulo (teardown da demo). Usage: mise run tf:destroy <module-path>"
+run = """
+#!/bin/bash
+if [ -n "$AWS_VAULT" ]; then
+  terraform -chdir=$1 destroy
+else
+  aws-vault exec $AWS_VAULT_PROFILE -- terraform -chdir=$1 destroy
+fi
+"""
+
 [tasks."tf:fmt"]
 description = "Format all Terraform files recursively"
 run = "terraform fmt -recursive ."

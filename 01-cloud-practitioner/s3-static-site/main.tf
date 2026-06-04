@@ -10,7 +10,11 @@ locals {
 resource "aws_s3_bucket" "site" {
   # checkov:skip=CKV2_AWS_6: estudo — bucket de site estático é público por design (acesso bloqueado abaixo é intencionalmente desligado)
   bucket = var.bucket_name
-  tags   = merge(local.tags, { Name = var.bucket_name })
+
+  # estudo — permite destroy mesmo com objetos do site dentro (teardown da demo em 1 comando)
+  force_destroy = true
+
+  tags = merge(local.tags, { Name = var.bucket_name })
 }
 
 resource "aws_s3_bucket_public_access_block" "site" {
