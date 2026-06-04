@@ -61,6 +61,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [detect-modules, lint-and-security]
     if: needs.detect-modules.outputs.modules != '[]'
+    env:
+      TF_VAR_alert_email: ${{ secrets.TF_VAR_ALERT_EMAIL }}
     strategy:
       matrix:
         module: ${{ fromJson(needs.detect-modules.outputs.modules) }}
@@ -99,3 +101,9 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+      - name: Fail job if plan failed
+        if: steps.plan.outcome == 'failure'
+        run: |
+          echo "::error::terraform plan falhou para ${{ matrix.module }} (ver comentário no PR)"
+          exit 1
