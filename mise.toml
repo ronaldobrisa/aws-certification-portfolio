@@ -1,5 +1,12 @@
+# Política: nunca usar "latest". Versões fixadas um minor atrás do latest.
+# mise fixado em 2026.5.18 (latest 2026.6.0); atualizar via `mise self-update <versão>`.
+min_version = "2026.5.18"
+
 [tools]
-terraform = "1.9"
+terraform = "1.14.9"
+aws-vault = "7.10.8"
+tflint = "0.62.1"
+checkov = "3.2.531"
 
 [env]
 AWS_VAULT_PROFILE = "rbti"

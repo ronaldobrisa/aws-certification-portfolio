@@ -36,14 +36,16 @@ jobs:
           python-version: "3.11"
 
       - name: Install checkov
-        run: pip install checkov
+        run: pip install checkov==3.2.531
 
       - uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.62.1
 
       - name: Terraform fmt check
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "~1.9"
+          terraform_version: "1.14.9"
 
       - run: terraform fmt -recursive -check .
 
@@ -73,7 +75,7 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "~1.9"
+          terraform_version: "1.14.9"
 
       - name: Terraform Init
         run: terraform -chdir=${{ matrix.module }} init
