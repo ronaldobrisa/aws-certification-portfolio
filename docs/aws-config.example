@@ -1,0 +1,20 @@
+# Exemplo de ~/.aws/config para este projeto.
+# Copie para a máquina nova com:  cp docs/aws-config.example ~/.aws/config
+# (ou rode `mise run setup`, que faz isso pra você se o arquivo ainda não existir).
+#
+# Este arquivo NÃO contém segredos e pode ficar versionado.
+# A access key/secret do usuário `rbti` vive APENAS no cofre do aws-vault
+# (~/.awsvault/keys/) — nunca aqui, nunca em ~/.aws/credentials, nunca no git.
+# Migração do segredo: copie o diretório ~/.awsvault/keys/ da máquina antiga
+# OU rode `aws-vault add rbti` com a chave do IAM. Ver docs/MIGRATION.md.
+
+[default]
+output           = json
+region           = us-east-1
+duration_seconds = 43200
+
+# Profile usado pelo projeto (AWS_VAULT_PROFILE=rbti no mise.toml).
+# Vazio de credenciais de propósito: o aws-vault resolve a credencial de longo
+# prazo a partir do keyring, não deste arquivo.
+[profile rbti]
+region = us-east-1

@@ -81,3 +81,40 @@ run = ["mise run tf:init 00-bootstrap", "mise run tf:apply 00-bootstrap"]
 [tasks."vault:login"]
 description = "Abre sessão aws-vault interativa para o profile rbti (8h)"
 run = "aws-vault exec $AWS_VAULT_PROFILE --duration=8h -- zsh"
+
+[tasks."setup"]
+description = "Setup reproduzível da máquina nova (ferramentas + ~/.aws/config). Não toca em segredos. Ver docs/MIGRATION.md."
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "==> [1/4] Instalando ferramentas pinadas (mise.toml)"
+mise install
+
+echo "==> [2/4] Fixando aws-cli no config global do mise"
+mise use -g aqua:aws/aws-cli@2.34.60
+
+echo "==> [3/4] Garantindo ~/.aws/config"
+mkdir -p "$HOME/.aws"
+if [ -f "$HOME/.aws/config" ]; then
+  echo "    ~/.aws/config já existe — não vou sobrescrever (compare com docs/aws-config.example)."
+else
+  cp docs/aws-config.example "$HOME/.aws/config"
+  echo "    ~/.aws/config criado a partir de docs/aws-config.example."
+fi
+
+echo "==> [4/4] Verificando credencial no cofre aws-vault (segredo, fora do git)"
+if aws-vault list --credentials 2>/dev/null | grep -qx "$AWS_VAULT_PROFILE"; then
+  echo "    OK: credencial '$AWS_VAULT_PROFILE' presente no cofre."
+else
+  echo "    FALTA a credencial '$AWS_VAULT_PROFILE'. Faça UMA das opções:"
+  echo "      a) copie o diretório ~/.awsvault/keys/ da máquina antiga, OU"
+  echo "      b) rode: aws-vault add $AWS_VAULT_PROFILE   (com a access key/secret do IAM)"
+fi
+
+echo
+echo "Próximos passos:"
+echo "  mise run vault:login                                        # destrava o cofre (passphrase)"
+echo "  mise run tf:apply 01-cloud-practitioner/ec2-first-instance  # recria a EC2"
+echo "O state dos módulos de app é remoto (S3) e reconecta sozinho no 'tf:init'."
+"""
